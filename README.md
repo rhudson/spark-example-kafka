@@ -12,7 +12,7 @@ Next, create your Kafka topic:
 
 Run the KafkaWordCountProducer to produce 10 messages per second with 100 words per message:
 
-    bin/KafkaWordCountProducer localhost:2181 wordcount 10 100
+    bin/KafkaWordCountProducer localhost:9092 wordcount 10 100
 
 Last but not least, run the KafkaWordCount example:
 
