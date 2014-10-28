@@ -14,6 +14,9 @@ net.virtualvoid.sbt.graph.Plugin.graphSettings
 
 assemblyOption in assembly ~= { _.copy(includeScala = false) }
 
+packAutoSettings
+
+
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % "1.0.0" % "provided",
   "org.apache.spark" %% "spark-streaming" % "1.0.0" % "provided",
@@ -21,9 +24,9 @@ libraryDependencies ++= Seq(
     exclude("commons-beanutils", "commons-beanutils").
     exclude("commons-collections", "commons-collections").
     // These lines should be added when assembling the uber jar for submission to Spark cluster
-//    exclude("org.apache.spark", "spark-core_2.10").
-//    exclude("org.apache.spark", "spark-streaming_2.10").
-//    exclude("javax.jms", "jms").
+    exclude("org.apache.spark", "spark-core_2.10").
+    exclude("org.apache.spark", "spark-streaming_2.10").
+    exclude("javax.jms", "jms").
     exclude("com.esotericsoftware.minlog", "minlog")
 )
 

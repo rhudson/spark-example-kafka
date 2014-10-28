@@ -54,7 +54,7 @@ object KafkaWordCount {
     val sparkConf = new SparkConf().setAppName("KafkaWordCount")
     val ssc =  new StreamingContext(sparkConf, Seconds(2))
     ssc.checkpoint("checkpoint")
-    ssc.sparkContext.addJar("/work/spark-example-kafka_2.10-1.0.jar")
+    //ssc.sparkContext.addJar("/work/spark-example-kafka_2.10-1.0.jar")
 
     val topicpMap = topics.split(",").map((_,numThreads.toInt)).toMap
     val lines = KafkaUtils.createStream(ssc, zkQuorum, group, topicpMap).map(_._2)
