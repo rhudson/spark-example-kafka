@@ -54,3 +54,33 @@ The spark-submit program supports the specification of the class path for the dr
 
 	/work/programs/spark-1.0.0-bin-hadoop2/bin/spark-submit --class spark.example.kafka.KafkaWordCount --master spark://172.31.16.164:7077 --driver-class-path /work/libs/\* /work/spark-example-kafka_2.10-1.0.jar devkafka01.ies:2181 kafkaSparkTestGroup wordcount 1
 
+
+## Run the KafkaWordCount example as dockerized application.
+
+Build the Docker image and push to the registry.
+
+	sbt clean package pack
+	rm target/pack/lib/scala-*.jar
+	docker build -t docker.ies:5000/spark-kafka-example .
+	docker push docker.ies:5000/spark-kafka-example
+
+Ensure that the target cluster is running from the correct base image.  Otherwise the dependencies may not be on the classpath.
+	
+	weave run 10.0.1.1/24 -d -v /var/log/spark:/var/log/spark -e RUN_AS_MASTER=1 -p 8080:8080 docker.ies:5000/ies-analytics-libs:3.1.0
+	weave run 10.0.1.11/24 -d -v /var/log/spark:/var/log/spark -e SPARK_MASTER_IP=10.0.1.1 docker.ies:5000/ies-analytics-libs:3.1.0
+	weave run 10.0.1.12/24 -d -v /var/log/spark:/var/log/spark -e SPARK_MASTER_IP=10.0.1.1 docker.ies:5000/ies-analytics-libs:3.1.0
+
+Start up a container from which to launch the driver program.
+
+	C=$(weave run 10.0.1.103/24 -t -i -p 4040:4040 docker.ies:5000/spark-kafka-example /bin/bash)
+	docker attach $C
+
+Run the driver program from within the container.
+
+	$SPARK_HOME/bin/spark-submit --class spark.example.kafka.KafkaWordCount --master spark://10.0.1.1:7077 --driver-class-path /app/libs/\* /app/spark-example-kafka_2.10-1.0.jar devkafka01.ies:2181 kafkaSparkTestGroup wordcount 1
+
+
+Kick off a producer locally.
+
+	bin/KafkaWordCountProducer devkafka01.ies:9092 wordcount 10 100
+
